@@ -1,0 +1,23 @@
+{
+  "name": "cs313-node-project",
+  "version": "1.0.0",
+  "description": "CS313 Final Project in Node JS",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nathan-owen/cs313-node-project.git"
+  },
+  "author": "Nathan Owen",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/nathan-owen/cs313-node-project/issues"
+  },
+  "dependencies": {
+    "express": "^4.16.4",
+    "pg": "^7.6.1"
+  },
+  "homepage": "https://github.com/nathan-owen/cs313-node-project#readme"
+}
