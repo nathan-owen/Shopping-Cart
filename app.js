@@ -19,7 +19,7 @@ app.get('/getList', function(req,res) {
                 if(err2) {
                     res.status(500).json({success:false,data:err2});
                 } else {
-                    res.status(200).json(res2);
+                    res.status(200).json({res2,listID:listID});
                 }
             });
         }
