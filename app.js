@@ -15,11 +15,11 @@ app.get('/getList', function(req,res) {
             res.status(500).json({success:false,data:err});
         } else {
             let listID = result.id;
-            getListContents(listID,function(err2,res2) {
+            getListContents(listID,function(err2,listItems) {
                 if(err2) {
                     res.status(500).json({success:false,data:err2});
                 } else {
-                    res.status(200).json({res2,listID:listID});
+                    res.status(200).json({listItems,listID:listID});
                 }
             });
         }
