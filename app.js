@@ -2,13 +2,21 @@ const express = require('express');
 const path = require('path');
 const app = express();
 const port = process.env.PORT || 3000;
+const bodyParser = require('body-parser');
+// parse application/x-www-form-urlencoded
+app.use(bodyParser.urlencoded({ extended: false }));
+
+// parse application/json
+app.use(bodyParser.json());
 
 const { Pool } = require("pg");
 const connectionString = process.env.DATABASE_URL || "postgres://postgres:1-1=Postgres@localhost:5432/shoppinglist";
 const pool = new Pool({connectionString: connectionString});
+app.use(express.static('public'));
 
 app.get('/getList', function(req,res) {
     let url = req.query.list;
+    console.log(`URL Received: ${url}`);
     //Do a SQL query and pull the list ID based on the list URL. Then pull all of the listContents relative to the ID
     getListID(url,function(err,result) {
         if(err) {
@@ -27,7 +35,7 @@ app.get('/getList', function(req,res) {
 });
 
 app.delete('/removeFromList', function(req,res) {
-    let  listContentsID = req.query.listContentsID;
+    let  listContentsID = req.body.listContentsID;
     //Do A DELETE SQL query where the listContentID = listContents.id
     removeFromList(listContentsID,function(err,result) {
         if(err || result.rowCount === 0) {
@@ -45,8 +53,8 @@ app.delete('/removeFromList', function(req,res) {
 
 app.post('/addToList', function(req,res) {
 
-    let itemID = req.query.itemID;
-    let listID = req.query.listID;
+    let itemID = req.body.itemID;
+    let listID = req.body.listID;
     //Do an INSERT INTO listContents database listID and itemID will be added.
     insertIntoList(itemID,listID,function(err,result) {
        if(err) {
@@ -64,9 +72,12 @@ app.post('/addToList', function(req,res) {
 });
 
 app.post('/createItem', function(req,res) {
-    let itemName = req.query.name;
-    let aisle = req.query.aisle || '';
-    let store = req.query.store || '';
+    let itemName = req.body.name;
+    let aisle = req.body.aisle || '';
+    let store = req.body.store || '';
+
+    console.log(`Item Name ${itemName}; Aisle: ${aisle}; Store: ${store}`);
+
     createItem(itemName,aisle,store,function(err,result) {
        if(err)
        {
@@ -83,10 +94,10 @@ app.post('/createItem', function(req,res) {
 });
 
 app.put('/updateItem', function(req,res) {
-    let itemName = req.query.name || '';
-    let aisle = req.query.aisle || '';
-    let store = req.query.store || '';
-    let itemID = req.query.itemID;
+    let itemName = req.body.name || '';
+    let aisle = req.body.aisle || '';
+    let store = req.body.store || '';
+    let itemID = req.body.itemID;
 
     updateItem(itemID,itemName,aisle,store,function(err) {
         if(err)
@@ -104,7 +115,7 @@ app.put('/updateItem', function(req,res) {
 });
 
 app.put('/addToCart', function(req,res) {
-    let listContentsID = req.query.listContentsID;
+    let listContentsID = req.body.listContentsID;
     addToCart(listContentsID,function(err){
         if(err){
             res.status(500).json({
@@ -120,7 +131,7 @@ app.put('/addToCart', function(req,res) {
 });
 
 app.put('/removeFromCart', function(req,res) {
-    let listContentsID = req.query.listContentsID;
+    let listContentsID = req.body.listContentsID;
     removeFromCart(listContentsID,function(err){
         if(err){
             res.status(500).json({
@@ -210,12 +221,14 @@ function removeFromCart(listContentID, callback) {
     });
 }
 function createItem(itemName,aisle,store,callback) {
+    console.log(`Item Name ${itemName}; Aisle: ${aisle}; Store: ${store}`);
+
     var sql = "INSERT INTO items (name,aisle,store) VALUES ($1::text,$2::text,$3::text) RETURNING id";
     var params = [itemName,aisle,store];
-
+    console.log(`Create Item Params: ${params}`);
     pool.query(sql, params, function(err, results) {
         if(err) {
-            console.log(`Error inserting list into database. ${err}`);
+            console.log(`Error inserting item into database. ${err}`);
             callback(err, null);
         } else {
             console.log(`Item ${itemName} has been inserted into database. The ID is ${results.rows[0].id}`);
@@ -229,6 +242,7 @@ function updateItem(itemID,itemName,aisle,store,callback) {
     var sql = "UPDATE items SET name = $1::text, aisle = $2::text, store = $3::text WHERE id = $4::int";
     var params = [itemName,aisle,store,itemID];
 
+    console.log(params);
     pool.query(sql, params, function(err) {
         if(err) {
             console.log(`Error updating item ${itemID}. ${err}`);
@@ -243,7 +257,7 @@ function updateItem(itemID,itemName,aisle,store,callback) {
 
  function getListContents(listID, callback) {
     //Get List Contents based on listID
-    let sql = "SELECT listcontents.id, items.name, items.aisle, items.store, incart FROM listcontents\n" +
+    let sql = "SELECT listcontents.id, items.name, items.aisle, items.store,items.id AS itemID, incart FROM listcontents\n" +
         "INNER JOIN items ON items.id = listcontents.itemid\n" +
         "WHERE listid = $1::int";
 

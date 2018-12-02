@@ -2,9 +2,123 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>$Title$</title>
+    <title>Hello World!</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+          rel="stylesheet">
 </head>
-<body>
-$END$
+<body onload="getList('9f1c284c5ec95c0c4d4c2d58f02536837219abea')">
+<div class="container">
+    <h2>Shopping List!</h2>
+    <div class="row" id="listObtainRow">
+        <button class="btn btn-primary" onclick="createList()">Create a List</button>
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#openListModal">Open Existing Shopping List</button>
+    </div>
+    <div class="row invisible" id="listManagementRow">
+        <button class="btn btn-primary" data-toggle="modal" data-target="#newItemModal">Add Item to List</button>
+    </div>
+<div class="row mt-3">
+<div class="list-group" id="list">
+
+</div>
+</div>
+</div>
+
+<!-- Open List Modal -->
+<div class="modal fade" id="openListModal" tabindex="-1" role="dialog" aria-labelledby="openListModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="openListModalLabel">Open Existing Shopping LIst</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <input type="text" class="form-control" id="listUrl" placeholder="Enter List URL Key">
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="getListUsingTextBox()">Open List</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- End of Open List Modal -->
+
+<!-- New Item Modal -->
+<div class="modal fade" id="newItemModal" tabindex="-1" role="dialog" aria-labelledby="newItemModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="newItemModalLabel">Add Item to List</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="itemName">Item Name</label>
+                    <input type="text" class="form-control" id="itemName" placeholder="Peanut Butter">
+                </div>
+                <div class="form-group">
+                    <label for="aisle">Aisle</label>
+                    <input type="text" class="form-control" id="aisle" placeholder="A5">
+                </div>
+                <div class="form-group">
+                    <label for="store">Store</label>
+                    <input type="text" class="form-control" id="store" placeholder="Walmart">
+                </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="addItemToList()">Add Item</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- New Item Modal -->
+<div class="modal fade" id="editItemModal" tabindex="-1" role="dialog" aria-labelledby="editItemModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editItemModalLabel">Edit Item</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="editedItemName">Item Name</label>
+                    <input type="text" class="form-control" id="editedItemName" placeholder="Peanut Butter">
+                </div>
+                <div class="form-group">
+                    <label for="editedAisle">Aisle</label>
+                    <input type="text" class="form-control" id="editedAisle" placeholder="A5">
+                </div>
+                <div class="form-group">
+                    <label for="editedStore">Store</label>
+                    <input type="text" class="form-control" id="editedStore" placeholder="Walmart">
+                </div>
+                <input type="hidden" id="itemID">
+                <input type="hidden" id="listContentID">
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-danger" data-dismiss="modal" onclick="removeItemFromList()">Remove From List</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="updateItem()">Update Item</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- End of New Item Modal -->
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+<script src="scripts.js"></script>
 </body>
 </html>
