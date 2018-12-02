@@ -24,6 +24,7 @@ function getList(listURL) {
         console.log(data.listItems);
         saveListCookie(data.listID,listURL);
         listItems = data.listItems;
+        $("#listURLLabel").html("Your List URL Key: <strong>" + listURL + "</strong>");
         displayList();
     })
 }
