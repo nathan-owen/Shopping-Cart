@@ -15,23 +15,28 @@ const pool = new Pool({connectionString: connectionString});
 app.use(express.static('public'));
 
 app.get('/getList', function(req,res) {
-    let url = req.query.list;
-    console.log(`URL Received: ${url}`);
-    //Do a SQL query and pull the list ID based on the list URL. Then pull all of the listContents relative to the ID
-    getListID(url,function(err,result) {
-        if(err) {
-            res.status(500).json({success:false,data:err});
-        } else {
-            let listID = result.id;
-            getListContents(listID,function(err2,listItems) {
-                if(err2) {
-                    res.status(500).json({success:false,data:err2});
-                } else {
-                    res.status(200).json({listItems,listID:listID});
-                }
-            });
-        }
-    });
+    try {
+        let url = req.query.list;
+        console.log(`URL Received: ${url}`);
+        //Do a SQL query and pull the list ID based on the list URL. Then pull all of the listContents relative to the ID
+        getListID(url, function (err, result) {
+            if (err || !result) {
+                res.status(500).json({success: false, data: err});
+            } else {
+
+                let listID = result.id;
+                getListContents(listID, function (err2, listItems) {
+                    if (err2) {
+                        res.status(500).json({success: false, data: err2});
+                    } else {
+                        res.status(200).json({listItems, listID: listID});
+                    }
+                });
+            }
+        });
+    } catch(err) {
+        console.log(err);
+    }
 });
 
 app.delete('/removeFromList', function(req,res) {
@@ -256,36 +261,44 @@ function updateItem(itemID,itemName,aisle,store,callback) {
 }
 
  function getListContents(listID, callback) {
-    //Get List Contents based on listID
-    let sql = "SELECT listcontents.id, items.name, items.aisle, items.store,items.id AS itemID, incart FROM listcontents\n" +
-        "INNER JOIN items ON items.id = listcontents.itemid\n" +
-        "WHERE listid = $1::int";
+    try {
+        //Get List Contents based on listID
+        let sql = "SELECT listcontents.id, items.name, items.aisle, items.store,items.id AS itemID, incart FROM listcontents\n" +
+            "INNER JOIN items ON items.id = listcontents.itemid\n" +
+            "WHERE listid = $1::int";
 
-    //    let sql = "SELECT * FROM listcontents WHERE listid = $1::int";
-    let params = [listID];
+        //    let sql = "SELECT * FROM listcontents WHERE listid = $1::int";
+        let params = [listID];
 
-    pool.query(sql, params, function(err,results) {
-        if(err) {
-            console.log(`Error Retrieving List Contents for ListID ${listID}. ${err}`);
-            callback(err,null);
-        } else {
-            callback(null, results.rows);
-        }
-    })
+        pool.query(sql, params, function (err, results) {
+            if (err) {
+                console.log(`Error Retrieving List Contents for ListID ${listID}. ${err}`);
+                callback(err, null);
+            } else {
+                callback(null, results.rows);
+            }
+        });
+    } catch (err) {
+        console.log(err);
+    }
 }
 
 function getListID(url,callback) {
-    let sql = "SELECT id FROM lists WHERE listurl = $1::text";
-    let params = [url];
+    try {
+        let sql = "SELECT id FROM lists WHERE listurl = $1::text";
+        let params = [url];
 
-    pool.query(sql, params, function(err, results) {
-        if(err) {
-            console.log(`There was an error getting the list using ${url} from the database. The error message is: ${err}`);
-            callback(err,null);
-        } else {
-            callback(null, results.rows[0]);
-        }
-    })
+        pool.query(sql, params, function (err, results) {
+            if (err) {
+                console.log(`There was an error getting the list using ${url} from the database. The error message is: ${err}`);
+                callback(err, null);
+            } else {
+                callback(null, results.rows[0]);
+            }
+        })
+    } catch (err) {
+        console.log(err);
+    }
 }
 
 
