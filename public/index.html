@@ -3,26 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <title>Hello World!</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
           rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet"/>
 </head>
-<body>
+<body onload="retrieveCookies()">
 <div class="container">
-    <h2>Shopping List!</h2>
-    <div class="row" id="listObtainRow">
-        <button class="btn btn-primary" onclick="createList()">Create a List</button>
-        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#openListModal">Open Existing Shopping List</button>
+    <h2>Your Shopping List</h2>
+    <div id="listObtainRow">
+            <button type="button" class="btn btn-primary" onclick="createList()">Create a List</button>
+            <button type="button" class="btn btn-primary " data-toggle="modal" data-target="#openListModal">Open Existing Shopping List</button>
     </div>
-    <div class="row invisible" id="listManagementRow">
-        <h5 id="listURLLabel"></h5>
-        <button class="btn btn-primary" data-toggle="modal" data-target="#newItemModal">Add Item to List</button>
-    </div>
-<div class="row mt-3">
-<div class="list-group" id="list">
+    <h5 id="listURLLabel"></h5>
 
-</div>
-</div>
+    <div class="row invisible" id="listManagementRow">
+        <div class="col">
+            <button class=" btn btn-primary" data-toggle="modal" data-target="#newItemModal">Add Item to List</button>
+        </div>
+        <div class="col">
+            <button class="btn btn-danger float-right" onclick="closeList()">Close List</button>
+        </div>
+    </div>
+<br>
+<div class="row">
+    <div class="col">
+        <div class="list-group" id="list"></div>
+    </div>
 </div>
 
 <!-- Open List Modal -->
@@ -110,16 +117,18 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-danger" data-dismiss="modal" onclick="removeItemFromList()">Remove From List</button>
                 <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="updateItem()">Update Item</button>
             </div>
         </div>
     </div>
 </div>
 <!-- End of New Item Modal -->
-
+</div>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
 <script src="scripts.js"></script>
 </body>
 </html>

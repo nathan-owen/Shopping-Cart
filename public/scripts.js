@@ -46,14 +46,16 @@ function addItemToList() {
                console.log(data2);
                if(data2.success === true) {
                    getList(listURL);
+                   toastr.success('Item added to List');
+
                }
            });
        }
     });
 }
 
-function removeItemFromList() {
-    let listContentID = $("#listContentID").val();
+function removeItemFromList(id) {
+    let listContentID = id || $("#listContentID").val();
 
     $.ajax({
         url:'/removeFromList',
@@ -61,6 +63,8 @@ function removeItemFromList() {
         data: {listContentsID:listContentID},
         success: function(result) {
             getList(listURL);
+            toastr.success('Item removed from List');
+
         }
     })
 }
@@ -80,8 +84,39 @@ function updateItem() {
         data: params,
         success: function(result) {
             getList(listURL);
+            toastr.success('Item Updated');
+
         }
     })
+}
+
+function addToCart(listContentID) {
+    let params = {listContentsID:listContentID};
+
+    $.ajax({
+        url:'/addToCart',
+        type: 'PUT',
+        data: params,
+        success: function() {
+            getList(listURL);
+            toastr.success('Item Added to Cart');
+
+        }
+    });
+}
+
+function removeFromCart(listContentID) {
+    let params = {listContentsID:listContentID};
+
+    $.ajax({
+        url:'/removeFromCart',
+        type: 'PUT',
+        data: params,
+        success: function() {
+            getList(listURL);
+            toastr.success('Item removed from Cart');
+        }
+    });
 }
 
 function displayList() {
@@ -93,22 +128,99 @@ function displayList() {
     });
 }
 
+function closeList() {
+    deleteCookie('listURL');
+    location.reload();
+}
 function createListItem(listItem) {
-    return `<button type="button" class="list-group-item list-group-item-action" data-toggle="modal" data-target="#editItemModal" data-name="${listItem.name}" data-aisle="${listItem.aisle}" data-store="${listItem.store}" data-id="${listItem.id}" data-itemid="${listItem.itemid}">
-                <h5 class="mb-1">${listItem.name}</h5>
-                <small>Aisle: ${listItem.aisle}</small><br>
-                <small>Store: ${listItem.store}</small>
-            </button>`;
+    let toolTipText = listItem.incart === true ? 'Remove from Cart' : 'Add to Cart';
+    return `<a href='#' class="list-group-item list-group-item-action" data-toggle="modal" data-target="#editItemModal" data-name="${listItem.name}" data-aisle="${listItem.aisle}" data-store="${listItem.store}" data-id="${listItem.id}" data-itemid="${listItem.itemid}">
+                <div class="row">
+                    <div class="col">
+                        <strong class="align-middle">${listItem.name}</strong>
+                    </div>
+                    <div class="col">
+                      <span class="btn btn-sm float-right border align-middle" onclick=";event.stopPropagation()">
+                        <i id='cartIndicator' onclick="removeItemFromList(${listItem.id})" class="material-icons" style="font-size:20px;" title="Remove from List">delete</i>
+                       </span>                    
+                     <span class="btn btn-sm float-right border align-middle" onclick=";event.stopPropagation()">
+                        <i id='cartIndicator' onclick="updateItemInCart(${listItem.incart},${listItem.id})" class="material-icons" style="font-size:20px;" title="${toolTipText}">${showCartAction(listItem.incart)}</i>
+                     </span>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <small>Aisle: ${listItem.aisle}</small><br>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">                
+                        <small>Store: ${listItem.store}</small>
+                    </div>
+                </div>
+            </a>`;
 }
 
-
+function updateItemInCart(inCart,listContentID) {
+    if(inCart)
+    {
+        removeFromCart(listContentID);
+    } else {
+        addToCart(listContentID);
+    }
+}
+function showCartAction(inCart) {
+    //Since it is in cart, the action will be to remove from Cart. If it's not in the cart, the action will be to remove from cart.s
+    if(inCart) {
+        return 'remove_shopping_cart';
+    } else {
+        return 'add_shopping_cart';
+    }
+    console.log(inCart);
+}
 function saveListCookie(id,url) {
-    document.cookie = "listID=" + id;
-    document.cookie = "listURL=" + url;
+    //Create Expiration Date
+    let d = new Date(); //Create an date object
+    d.setTime(d.getTime() + (7*1000*60*60*24)); //Set the time to 7 from the current date in milliseconds. 1000 milliseonds = 1 second
+    let expires = "expires=" + d.toGMTString(); //Compose the expiration date
+
+    document.cookie = `listURL=${url};expires=${expires}`;
+
     listID = id;
     listURL = url;
 }
 
+function retrieveCookies() {
+    listURL = getCookieByName('listURL');
+    if(listID !== '' && listURL !== '') {
+        getList(listURL);
+    }
+}
+
+function deleteCookie(cname) {
+    let d = new Date();
+    d.setTime(d.getTime() - (1000*60*60*24));
+    let expires = "expires=" + d.toGMTString();
+    window.document.cookie = cname+"="+"; "+expires;
+
+}
+
+function getCookieByName(name) {
+    let cookieName = name + '=';
+    let decodedCookies = decodeURIComponent(document.cookie);
+    let cookies = decodedCookies.split(';');
+    for(let i = 0; i < cookies.length; i++) {
+        var c = cookies[i];
+        while(c.charAt(0) === ' ') {
+            c = c.substring(1);
+        }
+        if(c.indexOf(cookieName) === 0) {
+            return c.substring(cookieName.length, c.length);
+        }
+    }
+    return "";
+}
+//Handle Modal Opening
 $('#editItemModal').on('show.bs.modal', function (event) {
     var button = $(event.relatedTarget); // Button that triggered the modal
     var itemName = button.data('name');// Extract info from data-* attributes
